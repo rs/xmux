@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/rs/xhandler"
-	"github.com/rs/xhandler/xmux"
+	"github.com/rs/xmux"
 	"golang.org/x/net/context"
 )
 

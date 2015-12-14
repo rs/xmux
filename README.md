@@ -12,23 +12,23 @@ The muxer is optimized for high performance and a small memory footprint. It sca
 
 **Only explicit matches:** With other muxers, like [http.ServeMux](http://golang.org/pkg/net/http/#ServeMux), a requested URL path could match multiple patterns. Therefore they have some awkward pattern priority rules, like *longest match* or *first registered, first matched*. By design of this router, a request can only match exactly one or no route. As a result, there are also no unintended matches, which makes it great for SEO and improves the user experience.
 
-**Stop caring about trailing slashes:** Choose the URL style you like, the muxer automatically redirects the client if a trailing slash is missing or if there is one extra. Of course it only does so, if the new path has a handler. If you don't like it, you can [turn off this behavior](http://godoc.org/github.com/rs/xhandler/xmux#Mux.RedirectTrailingSlash).
+**Stop caring about trailing slashes:** Choose the URL style you like, the muxer automatically redirects the client if a trailing slash is missing or if there is one extra. Of course it only does so, if the new path has a handler. If you don't like it, you can [turn off this behavior](http://godoc.org/github.com/rs/xmux#Mux.RedirectTrailingSlash).
 
 **Path auto-correction:** Besides detecting the missing or additional trailing slash at no extra cost, the muxer can also fix wrong cases and remove superfluous path elements (like `../` or `//`). Is [CAPTAIN CAPS LOCK](http://www.urbandictionary.com/define.php?term=Captain+Caps+Lock) one of your users? Xmux can help him by making a case-insensitive look-up and redirecting him to the correct URL.
 
 **Parameters in your routing pattern:** Stop parsing the requested URL path, just give the path segment a name and the router delivers the dynamic value to you. Because of the design of the router, path parameters are very cheap.
 
-**RouteGroups:** A way to create [groups of routes](http://godoc.org/github.com/rs/xhandler/xmux#Mux.NewGroup) without incurring any per-request overhead.
+**RouteGroups:** A way to create [groups of routes](http://godoc.org/github.com/rs/xmux#Mux.NewGroup) without incurring any per-request overhead.
 
 **Zero Garbage:** The matching and dispatching process generates zero bytes of garbage. In fact, the only heap allocations that are made, is by building the slice of the key-value pairs for path parameters and the `net/context` instance to store them in the context. If the request path contains no parameters, not a single heap allocation is necessary.
 
-**No more server crashes:** You can set a [Panic handler](http://godoc.org/github.com/rs/xhandler/xmux#Mux.PanicHandler) to deal with panics occurring during handling a HTTP request. The router then recovers and lets the `PanicHandler` log what happened and deliver a nice error page.
+**No more server crashes:** You can set a [Panic handler](http://godoc.org/github.com/rs/xmux#Mux.PanicHandler) to deal with panics occurring during handling a HTTP request. The router then recovers and lets the `PanicHandler` log what happened and deliver a nice error page.
 
-Of course you can also set **custom [NotFound](http://godoc.org/github.com/rs/xhandler/xmux#Mux.NotFound) and  [MethodNotAllowed](http://godoc.org/github.com/rs/xhandler/xmux#Mux.MethodNotAllowed) handlers**.
+Of course you can also set **custom [NotFound](http://godoc.org/github.com/rs/xmux#Mux.NotFound) and  [MethodNotAllowed](http://godoc.org/github.com/rs/xmux#Mux.MethodNotAllowed) handlers**.
 
 ## Usage
 
-This is just a quick introduction, view the [GoDoc](http://godoc.org/github.com/rs/xhandler/xmux) for details.
+This is just a quick introduction, view the [GoDoc](http://godoc.org/github.com/rs/xmux) for details.
 
 Let's start with a trivial example:
 ```go
@@ -40,7 +40,7 @@ import (
 	"net/http"
 
 	"github.com/rs/xhandler"
-	"github.com/rs/xhandler/xmux"
+	"github.com/rs/xmux"
 	"golang.org/x/net/context"
 )
 
@@ -73,7 +73,7 @@ import (
 	"time"
 
 	"github.com/rs/xhandler"
-	"github.com/rs/xhandler/xmux"
+	"github.com/rs/xmux"
 	"golang.org/x/net/context"
 )
 
