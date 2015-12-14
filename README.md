@@ -216,15 +216,8 @@ For even better scalability, the child nodes on each tree level are ordered by p
 
 
 ## Why doesn't this work with http.Handler?
-**It does!** The router itself implements the http.Handler interface.
-Moreover the router provides convenient [adapters for http.Handler](http://godoc.org/github.com/julienschmidt/httprouter#Router.Handler)s and [http.HandlerFunc](http://godoc.org/github.com/julienschmidt/httprouter#Router.HandlerFunc)s
-which allows them to be used as a [httprouter.Handle](http://godoc.org/github.com/julienschmidt/httprouter#Router.Handle) when registering a route.
-The only disadvantage is, that no parameter values can be retrieved when a
-http.Handler or http.HandlerFunc is used, since there is no efficient way to
-pass the values with the existing function parameters.
-Therefore [httprouter.Handle](http://godoc.org/github.com/julienschmidt/httprouter#Router.Handle) has a third function parameter.
 
-Just try it out for yourself, the usage of HttpRouter is very straightforward. The package is compact and minimalistic, but also probably one of the easiest routers to set up.
+**It does!** The router itself implements the http.Handler interface. Moreover the router provides convenient [adapters for http.Handler](http://godoc.org/github.com/rs/xmux#Mux.Handle)s and [http.HandlerFunc](http://godoc.org/github.com/rs/xmux#Mux.HandleFunc)s which allows them to be used as a [xhandler.HandlerC](http://godoc.org/github.com/rs/xhandler#HandlerC) when registering a route. The only disadvantage is, that no `net/context` and thus no parameter values can be retrieved when a `http.Handler` or `http.HandlerFunc` is used.
 
 ## Licenses
 
