@@ -1,6 +1,6 @@
 # Xmux
 
-[![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/rs/xhandler/xmux) [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/rs/xhandler/master/LICENSE) [![Build Status](https://travis-ci.org/rs/xhandler.svg?branch=master)](https://travis-ci.org/rs/xhandler) [![Coverage](http://gocover.io/_badge/github.com/rs/xhandler/xmux)](http://gocover.io/github.com/rs/xhandler/xmux)
+[![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/rs/xmux) [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/rs/master/LICENSE) [![Build Status](https://travis-ci.org/rs/xmux.svg?branch=master)](https://travis-ci.org/rs/xmux) [![Coverage](http://gocover.io/_badge/github.com/rs/xmux)](http://gocover.io/github.com/rs/xmux)
 
 Xmux is a lightweight high performance HTTP request muxer on top [xhandler](https://github.com/rs/xhandler). Xmux gets its speed from the fork of the amazing [httprouter](https://github.com/julienschmidt/httprouter). Route parameters are stored in `net/context` instead of being passed as an additional parameter.
 
