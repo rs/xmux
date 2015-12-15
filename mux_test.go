@@ -62,6 +62,16 @@ func TestCtxParams(t *testing.T) {
 	assert.Equal(t, emptyParams, Params(nil))
 }
 
+func TestCtxParam(t *testing.T) {
+	ps := ParamHolder{
+		params: []param{{"param1", "value1"}},
+	}
+	ctx := newParamContext(context.TODO(), ps)
+	assert.Equal(t, "value1", Param(ctx, "param1"))
+	assert.Equal(t, "", Param(context.TODO(), "param1"))
+	assert.Equal(t, "", Param(nil, "param1"))
+}
+
 func TestMux(t *testing.T) {
 	mux := New()
 

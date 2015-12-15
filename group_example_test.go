@@ -16,11 +16,11 @@ func ExampleMux_NewGroup() {
 	api := mux.NewGroup("/api")
 
 	api.GET("/users/:name", xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "GET /api/users/%s", xmux.Params(ctx).Get("name"))
+		fmt.Fprintf(w, "GET /api/users/%s", xmux.Param(ctx, "name"))
 	}))
 
 	api.POST("/users/:name", xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "POST /api/users/%s", xmux.Params(ctx).Get("name"))
+		fmt.Fprintf(w, "POST /api/users/%s", xmux.Param(ctx, "name"))
 	}))
 
 	if err := http.ListenAndServe(":8080", xhandler.New(context.Background(), mux)); err != nil {

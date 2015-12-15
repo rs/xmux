@@ -20,7 +20,7 @@
 //  }
 //
 //  func Hello(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-//      fmt.Fprintf(w, "hello, %s!\n", xmux.Params(ctx).Get("name"))
+//      fmt.Fprintf(w, "hello, %s!\n", xmux.Param(ctx, "name"))
 //  }
 //
 //  func main() {
@@ -65,8 +65,8 @@
 //   /files                              no match, but the router would redirect
 //
 // The value of parameters is saved as aParams type saved into the context.
-// Parameters can be retrieved by name using xhandler.Params(ctx).Get(name) method:
-//  user := xhandler.Params(ctx).Get("user") // defined by :user or *user
+// Parameters can be retrieved by name using xhandler.Param(ctx, name) method:
+//  user := xmux.Param(ctx, "user") // defined by :user or *user
 package xmux
 
 import (
@@ -167,6 +167,14 @@ func Params(ctx context.Context) ParamHolder {
 		return p
 	}
 	return emptyParams
+}
+
+// Param picks one URL parameters stored in context by its name.
+//
+// This is a shortcut for:
+//   xmux.Params(ctx).Get("name")
+func Param(ctx context.Context, name string) string {
+	return Params(ctx).Get(name)
 }
 
 // New returns a new muxer instance

@@ -49,7 +49,7 @@ func Index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func Hello(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello, %s!\n", xmux.Params(ctx).Get("name"))
+	fmt.Fprintf(w, "hello, %s!\n", xmux.Param(ctx, "name"))
 }
 
 func main() {
@@ -90,7 +90,7 @@ func main() {
 
 	// Use c.Handler to terminate the chain with your final handler
 	mux.GET("/welcome/:name", xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "Welcome %s!", xmux.Params(ctx).Get("name"))
+		fmt.Fprintf(w, "Welcome %s!", xmux.Param(ctx, "name"))
 	}))
 
 	if err := http.ListenAndServe(":8080", c.Handler(mux)); err != nil {
@@ -103,6 +103,16 @@ func main() {
 
 As you can see, `:name` is a *named parameter*. The values are accessible via `xmux.Params(ctx)`, which returns `xmux.ParamHolder`.
 You can get the value of a parameter by its name using `Get(name)` method:
+
+```go
+user := xmux.Params(ctx).Get("user")
+```
+
+or using `xmux.Param(ctx, name)` shortcut:
+
+```go
+user := xmux.Param(ctx, "user")
+```
 
 Named parameters only match a single path segment:
 
