@@ -310,11 +310,11 @@ func (mux *Mux) ServeHTTPC(ctx context.Context, w http.ResponseWriter, r *http.R
 			handler.ServeHTTPC(ctx, w, r)
 			return
 		} else if r.Method != "CONNECT" && path != "/" {
-			code := 301 // Permanent redirect, request with GET method
+			code := http.StatusMovedPermanently // Permanent redirect, request with GET method
 			if r.Method != "GET" {
 				// Temporary redirect, request with same method
 				// As of Go 1.3, Go does not support status code 308.
-				code = 307
+				code = http.StatusTemporaryRedirect
 			}
 
 			if tsr && mux.RedirectTrailingSlash {
