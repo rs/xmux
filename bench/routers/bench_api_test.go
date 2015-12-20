@@ -1,6 +1,6 @@
 // Forked from https://github.com/julienschmidt/go-http-routing-benchmark
 //
-package xmux
+package bench
 
 import (
 	"net/http"

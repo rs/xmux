@@ -185,7 +185,12 @@ BenchmarkGoji_ParamWrite-8      	 2000000	       594 ns/op	     336 B/op	       
 BenchmarkHTTPRouter_ParamWrite-8	10000000	       166 ns/op	      32 B/op	       1 allocs/op
 ```
 
-You can run this benchmark by using `go test -bench=.` in `xmux`'s root.
+You can run this benchmark by executing the following commands at the root of `xmux` repository:
+
+```go
+go get -t ./bench/routers
+go test ./bench/routers -bench .
+```
 
 ## How does it work?
 

@@ -1,6 +1,6 @@
 // Forked from https://github.com/julienschmidt/go-http-routing-benchmark
 //
-package xmux
+package bench
 
 import (
 	"io"
@@ -11,6 +11,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/pressly/chi"
 	"github.com/rs/xhandler"
+	"github.com/rs/xmux"
 	goji "github.com/zenazn/goji/web"
 	"golang.org/x/net/context"
 )
@@ -22,15 +23,35 @@ type route struct {
 	path   string
 }
 
+type mockResponseWriter struct{}
+
+func (m *mockResponseWriter) Header() (h http.Header) {
+	return http.Header{}
+}
+
+func (m *mockResponseWriter) Write(p []byte) (n int, err error) {
+	return len(p), nil
+}
+
+func (m *mockResponseWriter) WriteString(s string) (n int, err error) {
+	return len(s), nil
+}
+
+func (m *mockResponseWriter) WriteHeader(int) {}
+
+type testHandler struct{}
+
+func (n testHandler) ServeHTTPC(ctx context.Context, w http.ResponseWriter, r *http.Request) {}
+
 var httpHandlerC = xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {})
 
 var xhandlerWrite = xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, Params(ctx).Get("name"))
+	io.WriteString(w, xmux.Params(ctx).Get("name"))
 })
 
 func loadXhandler(routes []route) xhandler.HandlerC {
-	h := namedHandler{}
-	mux := New()
+	h := testHandler{}
+	mux := xmux.New()
 	for _, route := range routes {
 		mux.HandleC(route.method, route.path, h)
 	}
@@ -38,13 +59,13 @@ func loadXhandler(routes []route) xhandler.HandlerC {
 }
 
 func loadXhandlerSingle(method, path string, h xhandler.HandlerC) xhandler.HandlerC {
-	mux := New()
+	mux := xmux.New()
 	mux.HandleC(method, path, h)
 	return mux
 }
 
 func loadChi(routes []route) xhandler.HandlerC {
-	h := namedHandler{}
+	h := testHandler{}
 	router := chi.NewRouter()
 	for _, route := range routes {
 		switch route.method {
