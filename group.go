@@ -86,7 +86,7 @@ func (g *Group) Handle(method, path string, handler http.Handler) {
 	g.m.Handle(method, g.subPath(path), handler)
 }
 
-// HandleFunc regiester a standard http.HandlerFunc request handler with the given
+// HandleFunc registers a standard http.HandlerFunc request handler with the given
 // path and method. With this adapter, your handler won't have access to the
 // context and thus won't work with URL parameters.
 func (g *Group) HandleFunc(method, path string, handler http.HandlerFunc) {
