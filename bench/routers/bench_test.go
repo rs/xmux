@@ -49,7 +49,7 @@ var xhandlerWrite = xhandler.HandlerFuncC(func(ctx context.Context, w http.Respo
 	io.WriteString(w, xmux.Params(ctx).Get("name"))
 })
 
-func loadXhandler(routes []route) xhandler.HandlerC {
+func loadXmux(routes []route) xhandler.HandlerC {
 	h := testHandler{}
 	mux := xmux.New()
 	for _, route := range routes {
@@ -58,7 +58,7 @@ func loadXhandler(routes []route) xhandler.HandlerC {
 	return mux
 }
 
-func loadXhandlerSingle(method, path string, h xhandler.HandlerC) xhandler.HandlerC {
+func loadXmuxSingle(method, path string, h xhandler.HandlerC) xhandler.HandlerC {
 	mux := xmux.New()
 	mux.HandleC(method, path, h)
 	return mux
@@ -248,8 +248,8 @@ func benchRoutesC(b *testing.B, router xhandler.HandlerC, ctx context.Context, r
 // Micro Benchmarks
 
 // Route with Param (no write)
-func BenchmarkXhandler_Param1(b *testing.B) {
-	router := loadXhandlerSingle("GET", "/user/:name", httpHandlerC)
+func BenchmarkXmux_Param1(b *testing.B) {
+	router := loadXmuxSingle("GET", "/user/:name", httpHandlerC)
 
 	r, _ := http.NewRequest("GET", "/user/gordon", nil)
 	benchRequestC(b, router, context.Background(), r)
@@ -277,8 +277,8 @@ func BenchmarkHTTPRouter_Param1(b *testing.B) {
 const fiveColon = "/:a/:b/:c/:d/:e"
 const fiveRoute = "/test/test/test/test/test"
 
-func BenchmarkXhandler_Param5(b *testing.B) {
-	router := loadXhandlerSingle("GET", fiveColon, httpHandlerC)
+func BenchmarkXmux_Param5(b *testing.B) {
+	router := loadXmuxSingle("GET", fiveColon, httpHandlerC)
 
 	r, _ := http.NewRequest("GET", fiveRoute, nil)
 	benchRequestC(b, router, context.Background(), r)
@@ -306,14 +306,14 @@ func BenchmarkHTTPRouter_Param5(b *testing.B) {
 const twentyColon = "/:a/:b/:c/:d/:e/:f/:g/:h/:i/:j/:k/:l/:m/:n/:o/:p/:q/:r/:s/:t"
 const twentyRoute = "/a/b/c/d/e/f/g/h/i/j/k/l/m/n/o/p/q/r/s/t"
 
-func BenchmarkXhandler_Param20(b *testing.B) {
-	router := loadXhandlerSingle("GET", twentyColon, httpHandlerC)
+func BenchmarkXmux_Param20(b *testing.B) {
+	router := loadXmuxSingle("GET", twentyColon, httpHandlerC)
 
 	r, _ := http.NewRequest("GET", twentyRoute, nil)
 	benchRequestC(b, router, context.Background(), r)
 }
 func BenchmarkChi_Param20(b *testing.B) {
-	router := loadXhandlerSingle("GET", twentyColon, httpHandlerC)
+	router := loadXmuxSingle("GET", twentyColon, httpHandlerC)
 
 	r, _ := http.NewRequest("GET", twentyRoute, nil)
 	benchRequestC(b, router, context.Background(), r)
@@ -332,14 +332,14 @@ func BenchmarkHTTPRouter_Param20(b *testing.B) {
 }
 
 // Route with Param and write
-func BenchmarkXhandler_ParamWrite(b *testing.B) {
-	router := loadXhandlerSingle("GET", "/user/:name", xhandlerWrite)
+func BenchmarkXmux_ParamWrite(b *testing.B) {
+	router := loadXmuxSingle("GET", "/user/:name", xhandlerWrite)
 
 	r, _ := http.NewRequest("GET", "/user/gordon", nil)
 	benchRequestC(b, router, context.Background(), r)
 }
 func BenchmarkChi_ParamWrite(b *testing.B) {
-	router := loadXhandlerSingle("GET", "/user/:name", xhandlerWrite)
+	router := loadXmuxSingle("GET", "/user/:name", xhandlerWrite)
 
 	r, _ := http.NewRequest("GET", "/user/gordon", nil)
 	benchRequestC(b, router, context.Background(), r)
