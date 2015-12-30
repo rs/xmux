@@ -229,10 +229,123 @@ For even better scalability, the child nodes on each tree level are ordered by p
 └-
 ```
 
-
 ## Why doesn't this work with http.Handler?
 
 **It does!** The router itself implements the http.Handler interface. Moreover the router provides convenient [adapters for http.Handler](http://godoc.org/github.com/rs/xmux#Mux.Handle)s and [http.HandlerFunc](http://godoc.org/github.com/rs/xmux#Mux.HandleFunc)s which allows them to be used as a [xhandler.HandlerC](http://godoc.org/github.com/rs/xhandler#HandlerC) when registering a route. The only disadvantage is, that no `net/context` and thus no parameter values can be retrieved when a `http.Handler` or `http.HandlerFunc` is used.
+
+## Where can I find Middleware *X*?
+
+This package just provides a very efficient request muxer with a few extra features. The muxer is just a [xhandler.HandlerC](https://godoc.org/github.com/rs/xhandler#HandlerC), you can chain any `http.Handler` or `xhandler.HandlerC` compatible middleware before the router, for example the [Gorilla handlers](http://www.gorillatoolkit.org/pkg/handlers). Or you could [just write your own](http://justinas.org/writing-http-middleware-in-go/), it's very easy!
+
+### Multi-domain / Sub-domains
+
+Here is a quick example: Does your server serve multiple domains / hosts? You want to use sub-domains? Define a router per host!
+
+```go
+// We need an object that implements the xhandler.HandlerC interface.
+// Therefore we need a type for which we implement the ServeHTTP method.
+// We just use a map here, in which we map host names (with port) to xhandler.HandlerC
+type HostSwitch map[string]xhandler.HandlerC
+
+// Implement the ServerHTTP method on our new type
+func (hs HostSwitch) ServeHTTPC(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	// Check if a xhandler.HandlerC is registered for the given host.
+	// If yes, use it to handle the request.
+	if handler := hs[r.Host]; handler != nil {
+		handler.ServeHTTPC(ctx, w, r)
+	} else {
+		// Handle host names for wich no handler is registered
+		http.Error(w, "Forbidden", 403) // Or Redirect?
+	}
+}
+
+func main() {
+	c := xhandler.Chain{}
+
+	// Initialize a muxer as usual
+	mux := xmux.New()
+	mux.GET("/", Index)
+	mux.GET("/hello/:name", Hello)
+
+	// Make a new HostSwitch and insert the muxer (our http handler)
+	// for example.com and port 12345
+	hs := make(HostSwitch)
+	hs["example.com:12345"] = mux
+
+	// Use the HostSwitch to listen and serve on port 12345
+	if err := http.ListenAndServe(":12345", c.Handler(hs)); err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+### Basic Authentication
+Another quick example: Basic Authentication (RFC 2617) for handles:
+
+```go
+package main
+
+import (
+	"bytes"
+	"encoding/base64"
+	"fmt"
+	"log"
+	"net/http"
+	"strings"
+
+	"github.com/rs/xhandler"
+	"github.com/rs/xmux"
+	"golang.org/x/net/context"
+)
+
+func BasicAuth(user, pass []byte, next xhandler.HandlerC) xhandler.HandlerC {
+	return xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		const basicAuthPrefix string = "Basic "
+
+		// Get the Basic Authentication credentials
+		auth := r.Header.Get("Authorization")
+		if strings.HasPrefix(auth, basicAuthPrefix) {
+			// Check credentials
+			payload, err := base64.StdEncoding.DecodeString(auth[len(basicAuthPrefix):])
+			if err == nil {
+				pair := bytes.SplitN(payload, []byte(":"), 2)
+				if len(pair) == 2 &&
+					bytes.Equal(pair[0], user) &&
+					bytes.Equal(pair[1], pass) {
+
+					// Delegate request to the next handler
+					next.ServeHTTPC(ctx, w, r)
+					return
+				}
+			}
+		}
+
+		// Request Basic Authentication otherwise
+		w.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+	})
+}
+
+func Index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Not protected!\n")
+}
+
+func Protected(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Protected!\n")
+}
+
+func main() {
+	user := []byte("gordon")
+	pass := []byte("secret!")
+
+	c := xhandler.Chain{}
+	mux := xmux.New()
+	mux.GET("/", xhandler.HandlerFuncC(Index))
+	mux.GET("/protected/", BasicAuth(user, pass, xhandler.HandlerFuncC(Protected)))
+
+	log.Fatal(http.ListenAndServe(":8080", c.Handler(mux)))
+}
+```
 
 ## Licenses
 
