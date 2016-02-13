@@ -349,6 +349,6 @@ func main() {
 
 ## Licenses
 
-All source code is licensed under the [MIT License](https://raw.github.com/rs/xhandler/master/LICENSE).
+All source code is licensed under the [BSD License](https://raw.github.com/rs/xhandler/master/LICENSE).
 
 Xmux is forked from [httprouter](https://github.com/julienschmidt/httprouter) with [BSD License](https://github.com/julienschmidt/httprouter/blob/master/LICENSE).
