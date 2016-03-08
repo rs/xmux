@@ -322,7 +322,7 @@ func (n *node) insertChild(numParams uint8, path, fullPath string, handler xhand
 // If no handle can be found, a TSR (trailing slash redirect) recommendation is
 // made if a handler exists with an extra (without the) trailing slash for the
 // given path.
-func (n *node) getValue(path string) (handler xhandler.HandlerC, p ParamHolder, tsr bool) {
+func (n *node) getValue(path string) (handler xhandler.HandlerC, params ParamHolder, tsr bool) {
 walk: // Outer loop for walking the tree
 	for {
 		if len(path) > len(n.path) {
@@ -359,14 +359,14 @@ walk: // Outer loop for walking the tree
 					}
 
 					// save param value
-					if p.params == nil {
+					if params == nil {
 						// lazy allocation
-						p.params = make([]param, 0, n.maxParams)
+						params = make(ParamHolder, 0, n.maxParams)
 					}
-					i := len(p.params)
-					p.params = p.params[:i+1] // expand slice within preallocated capacity
-					p.params[i].key = n.path[1:]
-					p.params[i].value = path[:end]
+					i := len(params)
+					params = params[:i+1] // expand slice within preallocated capacity
+					params[i].Name = n.path[1:]
+					params[i].Value = path[:end]
 
 					// we need to go deeper!
 					if end < len(path) {
@@ -400,14 +400,14 @@ walk: // Outer loop for walking the tree
 					}
 
 					// save param value
-					if p.params == nil {
+					if params == nil {
 						// lazy allocation
-						p.params = make([]param, 0, n.maxParams)
+						params = make(ParamHolder, 0, n.maxParams)
 					}
-					i := len(p.params)
-					p.params = p.params[:i+1] // expand slice within preallocated capacity
-					p.params[i].key = n.path[2:]
-					p.params[i].value = path
+					i := len(params)
+					params = params[:i+1] // expand slice within preallocated capacity
+					params[i].Name = n.path[2:]
+					params[i].Value = path
 					handler = n.handler
 					return
 

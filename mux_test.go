@@ -30,32 +30,26 @@ func (m *mockResponseWriter) WriteHeader(int) {}
 
 func TestParams(t *testing.T) {
 	ps := ParamHolder{
-		params: []param{
-			{"param1", "value1"},
-			{"param2", "value2"},
-			{"param3", "value3"},
-		},
+		{"param1", "value1"},
+		{"param2", "value2"},
+		{"param3", "value3"},
 	}
-	for i := range ps.params {
-		assert.Equal(t, ps.params[i].value, ps.Get(ps.params[i].key))
+	for i := range ps {
+		assert.Equal(t, ps[i].Value, ps.Get(ps[i].Name))
 	}
 	assert.Equal(t, "", ps.Get("noKey"), "Expected empty string for not found")
 }
 
 func TestParamsDup(t *testing.T) {
 	ps := ParamHolder{
-		params: []param{
-			{"param", "value1"},
-			{"param", "value2"},
-		},
+		{"param", "value1"},
+		{"param", "value2"},
 	}
 	assert.Equal(t, "value1", ps.Get("param"))
 }
 
 func TestCtxParams(t *testing.T) {
-	ps := ParamHolder{
-		params: []param{{"param1", "value1"}},
-	}
+	ps := ParamHolder{{"param1", "value1"}}
 	ctx := newParamContext(context.TODO(), ps)
 	assert.Equal(t, "value1", Params(ctx).Get("param1"))
 	assert.Equal(t, emptyParams, Params(context.TODO()))
@@ -63,9 +57,7 @@ func TestCtxParams(t *testing.T) {
 }
 
 func TestCtxParam(t *testing.T) {
-	ps := ParamHolder{
-		params: []param{{"param1", "value1"}},
-	}
+	ps := ParamHolder{{"param1", "value1"}}
 	ctx := newParamContext(context.TODO(), ps)
 	assert.Equal(t, "value1", Param(ctx, "param1"))
 	assert.Equal(t, "", Param(context.TODO(), "param1"))
@@ -78,7 +70,7 @@ func TestMux(t *testing.T) {
 	routed := false
 	mux.HandleC("GET", "/user/:name", xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 		routed = true
-		assert.Equal(t, ParamHolder{params: []param{{"name", "gopher"}}}, Params(ctx))
+		assert.Equal(t, ParamHolder{{"name", "gopher"}}, Params(ctx))
 	}))
 
 	w := new(mockResponseWriter)

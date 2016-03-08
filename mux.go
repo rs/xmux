@@ -128,21 +128,20 @@ type Mux struct {
 }
 
 // ParamHolder holds URL parameters.
-type ParamHolder struct {
-	params []param
-}
+type ParamHolder []Parameter
 
-type param struct {
-	key   string
-	value string
+// Parameter holds URL parameter.
+type Parameter struct {
+	Name  string
+	Value string
 }
 
 // Get returns the value of the first Param which key matches the given name.
 // If no matching Param is found, an empty string is returned.
 func (ps ParamHolder) Get(name string) string {
-	for i := range ps.params {
-		if ps.params[i].key == name {
-			return ps.params[i].value
+	for _, h := range ps {
+		if h.Name == name {
+			return h.Value
 		}
 	}
 	return ""
@@ -152,7 +151,7 @@ type key int
 
 const paramsKey key = iota
 
-var emptyParams = ParamHolder{}
+var emptyParams = ParamHolder(nil)
 
 func newParamContext(ctx context.Context, p ParamHolder) context.Context {
 	return context.WithValue(ctx, paramsKey, p)
@@ -304,7 +303,7 @@ func (mux *Mux) ServeHTTPC(ctx context.Context, w http.ResponseWriter, r *http.R
 		path := r.URL.Path
 
 		if handler, p, tsr := root.getValue(path); handler != nil {
-			if len(p.params) > 0 {
+			if len(p) > 0 {
 				ctx = newParamContext(ctx, p)
 			}
 			handler.ServeHTTPC(ctx, w, r)
