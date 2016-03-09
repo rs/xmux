@@ -160,10 +160,7 @@ func TestTreeAddAndGet(t *testing.T) {
 
 func newParams(kv ...string) (ps ParamHolder) {
 	for i, l := 0, len(kv); i < l; i += 2 {
-		ps.params = append(ps.params, struct {
-			key   string
-			value string
-		}{kv[i], kv[i+1]})
+		ps = append(ps, Parameter{kv[i], kv[i+1]})
 	}
 	return
 }
