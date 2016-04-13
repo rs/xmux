@@ -82,12 +82,15 @@ func TestMux(t *testing.T) {
 func TestMuxAdaptors(t *testing.T) {
 	mux := New()
 
-	var handle, handleFunc bool
+	var handle, handleFunc, handleFuncC bool
 	mux.Handle("GET", "/handle", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		handle = true
 	}))
 	mux.HandleFunc("GET", "/handleFunc", func(w http.ResponseWriter, r *http.Request) {
 		handleFunc = true
+	})
+	mux.HandleFuncC("GET", "/handleFuncC", func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
+		handleFuncC = true
 	})
 
 	w := new(mockResponseWriter)
@@ -99,6 +102,11 @@ func TestMuxAdaptors(t *testing.T) {
 	r, _ = http.NewRequest("GET", "/handleFunc", nil)
 	mux.ServeHTTPC(context.Background(), w, r)
 	assert.True(t, handleFunc, "routing failed")
+
+	w = new(mockResponseWriter)
+	r, _ = http.NewRequest("GET", "/handleFuncC", nil)
+	mux.ServeHTTPC(context.Background(), w, r)
+	assert.True(t, handleFuncC, "routing failed")
 }
 
 type handlerStruct struct {

@@ -74,7 +74,7 @@ func TestGroupAdaptors(t *testing.T) {
 }
 
 func TestRouteGroupAPI(t *testing.T) {
-	var get, head, options, post, put, patch, delete bool
+	var get, head, options, post, put, patch, delete, ctx bool
 
 	mux := New()
 	group := mux.NewGroup("/foo") // creates /foo group
@@ -100,6 +100,9 @@ func TestRouteGroupAPI(t *testing.T) {
 	group.DELETE("/DELETE", xhandler.HandlerFuncC(func(_ context.Context, _ http.ResponseWriter, _ *http.Request) {
 		delete = true
 	}))
+	group.HandleFuncC("GET", "/Context", func(_ context.Context, _ http.ResponseWriter, _ *http.Request) {
+		ctx = true
+	})
 
 	w := new(mockResponseWriter)
 
@@ -130,4 +133,8 @@ func TestRouteGroupAPI(t *testing.T) {
 	r, _ = http.NewRequest("DELETE", "/foo/DELETE", nil)
 	mux.ServeHTTPC(context.Background(), w, r)
 	assert.True(t, delete, "routing /foo/DELETE failed")
+
+	r, _ = http.NewRequest("GET", "/foo/Context", nil)
+	mux.ServeHTTPC(context.Background(), w, r)
+	assert.True(t, ctx, "routing /foo/Context failed")
 }
