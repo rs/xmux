@@ -93,6 +93,8 @@ func (g *Group) HandleFunc(method, path string, handler http.HandlerFunc) {
 	g.m.HandleFunc(method, g.subPath(path), handler)
 }
 
+// HandleFuncC registers a standard xhandler.HandlerFuncC request handler with
+// the given path and method.
 func (g *Group) HandleFuncC(method, path string, handler xhandler.HandlerFuncC) {
 	g.m.HandleFuncC(method, g.subPath(path), handler)
 }
