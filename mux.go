@@ -275,6 +275,12 @@ func (mux *Mux) HandleFunc(method, path string, handler http.HandlerFunc) {
 	)
 }
 
+// HandleFuncC registers a standard xhandler.HandlerFuncC request handler with
+// the given path and method.
+func (mux *Mux) HandleFuncC(method, path string, handler xhandler.HandlerFuncC) {
+	mux.HandleC(method, path, xhandler.HandlerFuncC(handler))
+}
+
 func (mux *Mux) recv(ctx context.Context, w http.ResponseWriter, r *http.Request) {
 	if rcv := recover(); rcv != nil {
 		mux.PanicHandler(ctx, w, r, rcv)
