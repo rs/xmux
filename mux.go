@@ -276,11 +276,7 @@ func (mux *Mux) HandleFunc(method, path string, handler http.HandlerFunc) {
 }
 
 func (mux *Mux) HandleFuncC(method, path string, handler xhandler.HandlerFuncC) {
-	mux.HandleC(method, path,
-		xhandler.HandlerFuncC(func(ctx context.Context, w http.ResponseWriter, r *http.Request) {
-			handler(ctx, w, r)
-		}),
-	)
+	mux.HandleC(method, path, xhandler.HandlerFuncC(handler))
 }
 
 func (mux *Mux) recv(ctx context.Context, w http.ResponseWriter, r *http.Request) {
