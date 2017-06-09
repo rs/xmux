@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"context"
+
 	"github.com/rs/xhandler"
 	"github.com/rs/xmux"
-	"golang.org/x/net/context"
 )
 
 func ExampleMux() {

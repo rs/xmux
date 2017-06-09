@@ -76,7 +76,7 @@ import (
 
 	"github.com/rs/xhandler"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 // Mux is a xhandler.HandlerC which can be used to dispatch requests to different

@@ -8,12 +8,13 @@ import (
 	"regexp"
 	"testing"
 
+	"context"
+
 	"github.com/julienschmidt/httprouter"
 	"github.com/pressly/chi"
 	"github.com/rs/xhandler"
 	"github.com/rs/xmux"
 	goji "github.com/zenazn/goji/web"
-	"golang.org/x/net/context"
 )
 
 var benchRe *regexp.Regexp
