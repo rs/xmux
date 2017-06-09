@@ -11,7 +11,6 @@ import (
 	"context"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/pressly/chi"
 	"github.com/rs/xhandler"
 	"github.com/rs/xmux"
 	goji "github.com/zenazn/goji/web"
@@ -63,47 +62,6 @@ func loadXmuxSingle(method, path string, h xhandler.HandlerC) xhandler.HandlerC 
 	mux := xmux.New()
 	mux.HandleC(method, path, h)
 	return mux
-}
-
-func loadChi(routes []route) xhandler.HandlerC {
-	h := testHandler{}
-	router := chi.NewRouter()
-	for _, route := range routes {
-		switch route.method {
-		case "GET":
-			router.Get(route.path, h)
-		case "POST":
-			router.Post(route.path, h)
-		case "PUT":
-			router.Put(route.path, h)
-		case "PATCH":
-			router.Patch(route.path, h)
-		case "DELETE":
-			router.Delete(route.path, h)
-		default:
-			panic("Unknown HTTP method: " + route.method)
-		}
-	}
-	return router
-}
-
-func loadChiSingle(method, path string, h xhandler.HandlerC) xhandler.HandlerC {
-	router := chi.NewRouter()
-	switch method {
-	case "GET":
-		router.Get(path, h)
-	case "POST":
-		router.Post(path, h)
-	case "PUT":
-		router.Put(path, h)
-	case "PATCH":
-		router.Patch(path, h)
-	case "DELETE":
-		router.Delete(path, h)
-	default:
-		panic("Unknown HTTP method: " + method)
-	}
-	return router
 }
 
 func httpHandlerFunc(w http.ResponseWriter, r *http.Request) {}
@@ -255,12 +213,6 @@ func BenchmarkXmux_Param1(b *testing.B) {
 	r, _ := http.NewRequest("GET", "/user/gordon", nil)
 	benchRequestC(b, router, context.Background(), r)
 }
-func BenchmarkChi_Param1(b *testing.B) {
-	router := loadChiSingle("GET", "/user/:name", httpHandlerC)
-
-	r, _ := http.NewRequest("GET", "/user/gordon", nil)
-	benchRequestC(b, router, context.Background(), r)
-}
 func BenchmarkGoji_Param1(b *testing.B) {
 	router := loadGojiSingle("GET", "/user/:name", httpHandlerFunc)
 
@@ -280,12 +232,6 @@ const fiveRoute = "/test/test/test/test/test"
 
 func BenchmarkXmux_Param5(b *testing.B) {
 	router := loadXmuxSingle("GET", fiveColon, httpHandlerC)
-
-	r, _ := http.NewRequest("GET", fiveRoute, nil)
-	benchRequestC(b, router, context.Background(), r)
-}
-func BenchmarkChi_Param5(b *testing.B) {
-	router := loadChiSingle("GET", fiveColon, httpHandlerC)
 
 	r, _ := http.NewRequest("GET", fiveRoute, nil)
 	benchRequestC(b, router, context.Background(), r)
@@ -313,12 +259,6 @@ func BenchmarkXmux_Param20(b *testing.B) {
 	r, _ := http.NewRequest("GET", twentyRoute, nil)
 	benchRequestC(b, router, context.Background(), r)
 }
-func BenchmarkChi_Param20(b *testing.B) {
-	router := loadXmuxSingle("GET", twentyColon, httpHandlerC)
-
-	r, _ := http.NewRequest("GET", twentyRoute, nil)
-	benchRequestC(b, router, context.Background(), r)
-}
 func BenchmarkGoji_Param20(b *testing.B) {
 	router := loadGojiSingle("GET", twentyColon, httpHandlerFunc)
 
@@ -334,12 +274,6 @@ func BenchmarkHTTPRouter_Param20(b *testing.B) {
 
 // Route with Param and write
 func BenchmarkXmux_ParamWrite(b *testing.B) {
-	router := loadXmuxSingle("GET", "/user/:name", xhandlerWrite)
-
-	r, _ := http.NewRequest("GET", "/user/gordon", nil)
-	benchRequestC(b, router, context.Background(), r)
-}
-func BenchmarkChi_ParamWrite(b *testing.B) {
 	router := loadXmuxSingle("GET", "/user/:name", xhandlerWrite)
 
 	r, _ := http.NewRequest("GET", "/user/gordon", nil)

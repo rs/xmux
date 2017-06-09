@@ -59,7 +59,6 @@ var parseAPI = []route{
 
 var (
 	parseXmux       xhandler.HandlerC
-	parseChi        xhandler.HandlerC
 	parseGoji       http.Handler
 	parseHTTPRouter http.Handler
 )
@@ -70,14 +69,6 @@ func getParseXmux(b *testing.B) xhandler.HandlerC {
 		parseXmux = loadXmux(parseAPI)
 	}
 	return parseXmux
-}
-
-func getParseChi(b *testing.B) xhandler.HandlerC {
-	defer b.ResetTimer()
-	if parseChi == nil {
-		parseChi = loadChi(parseAPI)
-	}
-	return parseChi
 }
 
 func getParseGoji(b *testing.B) http.Handler {
@@ -100,10 +91,6 @@ func BenchmarkXmux_APIStatic(b *testing.B) {
 	r, _ := http.NewRequest("GET", "/1/users", nil)
 	benchRequestC(b, getParseXmux(b), context.Background(), r)
 }
-func BenchmarkChi_APIStatic(b *testing.B) {
-	r, _ := http.NewRequest("GET", "/1/users", nil)
-	benchRequestC(b, getParseChi(b), context.Background(), r)
-}
 func BenchmarkGoji_APIStatic(b *testing.B) {
 	r, _ := http.NewRequest("GET", "/1/users", nil)
 	benchRequest(b, getParseGoji(b), r)
@@ -116,10 +103,6 @@ func BenchmarkHTTPRouter_APIStatic(b *testing.B) {
 func BenchmarkXmux_APIParam(b *testing.B) {
 	r, _ := http.NewRequest("GET", "/1/classes/go", nil)
 	benchRequestC(b, getParseXmux(b), context.Background(), r)
-}
-func BenchmarkChi_APIParam(b *testing.B) {
-	r, _ := http.NewRequest("GET", "/1/classes/go", nil)
-	benchRequestC(b, getParseChi(b), context.Background(), r)
 }
 func BenchmarkGoji_APIParam(b *testing.B) {
 	r, _ := http.NewRequest("GET", "/1/classes/go", nil)
@@ -134,10 +117,6 @@ func BenchmarkXmux_API2Params(b *testing.B) {
 	r, _ := http.NewRequest("GET", "/1/classes/go/123456789", nil)
 	benchRequestC(b, getParseXmux(b), context.Background(), r)
 }
-func BenchmarkChi_API2Params(b *testing.B) {
-	r, _ := http.NewRequest("GET", "/1/classes/go/123456789", nil)
-	benchRequestC(b, getParseChi(b), context.Background(), r)
-}
 func BenchmarkGoji_API2Params(b *testing.B) {
 	r, _ := http.NewRequest("GET", "/1/classes/go/123456789", nil)
 	benchRequest(b, getParseGoji(b), r)
@@ -149,9 +128,6 @@ func BenchmarkHTTPRouter_API2Params(b *testing.B) {
 
 func BenchmarkXmux_APIAll(b *testing.B) {
 	benchRoutesC(b, getParseXmux(b), context.Background(), parseAPI)
-}
-func BenchmarkChi_APIAll(b *testing.B) {
-	benchRoutesC(b, getParseChi(b), context.Background(), parseAPI)
 }
 func BenchmarkGoji_APIAll(b *testing.B) {
 	benchRoutes(b, getParseGoji(b), parseAPI)
