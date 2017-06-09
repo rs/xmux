@@ -66,7 +66,7 @@ func (g *Group) DELETE(path string, handler xhandler.HandlerC) {
 	g.HandleC("DELETE", path, handler)
 }
 
-// HandleC registers a net/context aware request handler with the given
+// HandleC registers a context aware request handler with the given
 // path and method.
 //
 // For GET, POST, PUT, PATCH and DELETE requests the respective shortcut

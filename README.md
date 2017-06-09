@@ -2,7 +2,7 @@
 
 [![godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/rs/xmux) [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/rs/xmux/master/LICENSE) [![Build Status](https://travis-ci.org/rs/xmux.svg?branch=master)](https://travis-ci.org/rs/xmux) [![Coverage](http://gocover.io/_badge/github.com/rs/xmux)](http://gocover.io/github.com/rs/xmux)
 
-Xmux is a lightweight high performance HTTP request muxer on top [xhandler](https://github.com/rs/xhandler). Xmux gets its speed from the fork of the amazing [httprouter](https://github.com/julienschmidt/httprouter). Route parameters are stored in `net/context` instead of being passed as an additional parameter.
+Xmux is a lightweight high performance HTTP request muxer on top [xhandler](https://github.com/rs/xhandler). Xmux gets its speed from the fork of the amazing [httprouter](https://github.com/julienschmidt/httprouter). Route parameters are stored in `context` instead of being passed as an additional parameter.
 
 In contrast to the [default mux](http://golang.org/pkg/net/http/#ServeMux) of Go's `net/http` package, this muxer supports variables in the routing pattern and matches against the request method. It also scales better.
 
@@ -20,7 +20,7 @@ The muxer is optimized for high performance and a small memory footprint. It sca
 
 **RouteGroups:** A way to create [groups of routes](http://godoc.org/github.com/rs/xmux#Mux.NewGroup) without incurring any per-request overhead.
 
-**Zero Garbage:** The matching and dispatching process generates zero bytes of garbage. In fact, the only heap allocations that are made, is by building the slice of the key-value pairs for path parameters and the `net/context` instance to store them in the context. If the request path contains no parameters, not a single heap allocation is necessary.
+**Zero Garbage:** The matching and dispatching process generates zero bytes of garbage. In fact, the only heap allocations that are made, is by building the slice of the key-value pairs for path parameters and the `context` instance to store them in the context. If the request path contains no parameters, not a single heap allocation is necessary.
 
 **No more server crashes:** You can set a [Panic handler](http://godoc.org/github.com/rs/xmux#Mux.PanicHandler) to deal with panics occurring during handling a HTTP request. The router then recovers and lets the `PanicHandler` log what happened and deliver a nice error page.
 
@@ -38,10 +38,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"context"
 
 	"github.com/rs/xhandler"
 	"github.com/rs/xmux"
-	"golang.org/x/net/context"
 )
 
 func Index(ctx context.Context, w http.ResponseWriter, r *http.Request) {
@@ -67,6 +67,7 @@ You may also chain middleware using `xhandler.Chain`:
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -74,7 +75,6 @@ import (
 
 	"github.com/rs/xhandler"
 	"github.com/rs/xmux"
-	"golang.org/x/net/context"
 )
 
 func main() {
@@ -141,7 +141,7 @@ Pattern: /src/*filepath
 
 ## Benchmarks
 
-Thanks to [Julien Schmidt](https://github.com/julienschmidt) excellent [HTTP routing benchmark](https://github.com/julienschmidt/go-http-routing-benchmark), we can see that xhandler's muxer is pretty close to `httprouter` as it is a fork of it. The small overhead is due to the `net/context` allocation used to store route parameters. It still outperform other routers, thanks to amazing `httprouter`'s radix tree based matcher.
+Thanks to [Julien Schmidt](https://github.com/julienschmidt) excellent [HTTP routing benchmark](https://github.com/julienschmidt/go-http-routing-benchmark), we can see that xhandler's muxer is pretty close to `httprouter` as it is a fork of it. The small overhead is due to the `context` allocation used to store route parameters. It still outperform other routers, thanks to amazing `httprouter`'s radix tree based matcher.
 
 ```
 BenchmarkXhandler_APIStatic-8   	50000000	        39.6 ns/op	       0 B/op	       0 allocs/op
@@ -231,7 +231,7 @@ For even better scalability, the child nodes on each tree level are ordered by p
 
 ## Why doesn't this work with http.Handler?
 
-**It does!** The router itself implements the http.Handler interface. Moreover the router provides convenient [adapters for http.Handler](http://godoc.org/github.com/rs/xmux#Mux.Handle)s and [http.HandlerFunc](http://godoc.org/github.com/rs/xmux#Mux.HandleFunc)s which allows them to be used as a [xhandler.HandlerC](http://godoc.org/github.com/rs/xhandler#HandlerC) when registering a route. The only disadvantage is, that no `net/context` and thus no parameter values can be retrieved when a `http.Handler` or `http.HandlerFunc` is used.
+**It does!** The router itself implements the http.Handler interface. Moreover the router provides convenient [adapters for http.Handler](http://godoc.org/github.com/rs/xmux#Mux.Handle)s and [http.HandlerFunc](http://godoc.org/github.com/rs/xmux#Mux.HandleFunc)s which allows them to be used as a [xhandler.HandlerC](http://godoc.org/github.com/rs/xhandler#HandlerC) when registering a route. The only disadvantage is, that no `context` and thus no parameter values can be retrieved when a `http.Handler` or `http.HandlerFunc` is used.
 
 ## Where can I find Middleware *X*?
 
@@ -287,6 +287,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"fmt"
 	"log"
@@ -295,7 +296,6 @@ import (
 
 	"github.com/rs/xhandler"
 	"github.com/rs/xmux"
-	"golang.org/x/net/context"
 )
 
 func BasicAuth(user, pass []byte, next xhandler.HandlerC) xhandler.HandlerC {
