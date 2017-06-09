@@ -9,7 +9,7 @@ import (
 	"github.com/rs/xhandler"
 	"github.com/stretchr/testify/assert"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 type mockResponseWriter struct{}

@@ -15,7 +15,7 @@ import (
 
 	"github.com/rs/xhandler"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 func printChildren(n *node, prefix string) {

@@ -5,9 +5,10 @@ import (
 	"log"
 	"net/http"
 
+	"context"
+
 	"github.com/rs/xhandler"
 	"github.com/rs/xmux"
-	"golang.org/x/net/context"
 )
 
 func ExampleMux_NewGroup() {
